@@ -1,0 +1,81 @@
+﻿@model KhoaNoiVuCNTT.Models.ThongBao
+
+@{
+    ViewData["Title"] = "Sửa Thông Báo";
+}
+
+<div class="container-fluid py-4 px-lg-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0" style="border-radius: 16px;">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                    <div class="d-flex align-items-center">
+                        <a asp-action="Index" class="btn btn-sm btn-outline-secondary rounded-circle me-3" style="width: 32px; height: 32px; padding: 3px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-arrow-left"></i>
+                        </a>
+                        <h4 class="mb-0 fw-bold text-warning"><i class="fas fa-edit me-2"></i>Chỉnh sửa Bài đăng</h4>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form asp-action="Edit" class="needs-validation" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small"></div>
+                        <input type="hidden" asp-for="MaThongBao" />
+                        
+                        <div class="row g-4">
+                            <div class="col-md-12">
+                                <label asp-for="TieuDe" class="form-label fw-bold small text-muted">Tiêu đề thông báo <span class="text-danger">*</span></label>
+                                <input asp-for="TieuDe" class="form-control form-control-lg fs-6" style="border-radius: 10px;" required minlength="5" />
+                                <span asp-validation-for="TieuDe" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="MaNguoiDang" class="form-label fw-bold small text-muted">Người đăng bài <span class="text-danger">*</span></label>
+                                <select asp-for="MaNguoiDang" class="form-select" style="border-radius: 10px;" asp-items="ViewBag.MaNguoiDang" required></select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="NgayDang" class="form-label fw-bold small text-muted">Cập nhật Ngày giờ đăng</label>
+                                <input asp-for="NgayDang" type="datetime-local" class="form-control" style="border-radius: 10px;" required />
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="NoiDung" class="form-label fw-bold small text-muted">Nội dung chi tiết <span class="text-danger">*</span></label>
+                                <textarea asp-for="NoiDung" class="form-control" style="border-radius: 10px;" rows="6" required></textarea>
+                                <span asp-validation-for="NoiDung" class="text-danger small mt-1 d-block"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4 pt-4 border-top">
+                            <a asp-action="Index" class="btn btn-light px-4 me-2" style="border-radius: 8px;">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-warning px-4 shadow-sm text-dark" style="border-radius: 8px;">
+                                <i class="fas fa-sync-alt me-2"></i>Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
+}

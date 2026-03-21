@@ -1,0 +1,138 @@
+﻿@model IEnumerable<KhoaNoiVuCNTT.Models.TaiLieu>
+
+@{
+    ViewData["Title"] = "Quản lý Tài liệu & Biểu mẫu";
+    var totalTaiLieu = Model?.Count() ?? 0;
+}
+
+<style>
+    :root {
+        --primary-soft: #eef2ff;
+        --primary-dark: #4338ca;
+    }
+    body { background-color: #f9fafb; font-family: 'Inter', sans-serif; }
+    .stat-card { border: none; border-radius: 12px; transition: transform 0.2s; }
+    .stat-card:hover { transform: translateY(-5px); }
+    .table-container { background: white; border-radius: 16px; overflow: hidden; }
+    .search-input { border-radius: 10px 0 0 10px; border-right: none; }
+    .search-btn { border-radius: 0 10px 10px 0; }
+</style>
+
+<div class="container-fluid py-4 px-lg-5">
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card stat-card shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1 opacity-75 small">Tổng số Tài liệu</p>
+                            <h3 class="mb-0 fw-bold">@totalTaiLieu <span class="fs-6 fw-normal">file</span></h3>
+                        </div>
+                        <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                            <i class="fas fa-file-pdf fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4 px-3 py-2">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-6">
+                <div class="input-group">
+                    <input type="text" id="mainSearch" class="form-control search-input" placeholder="Tìm tên tài liệu, phân loại...">
+                    <button class="btn btn-primary search-btn"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+            <div class="col-lg-6 text-lg-end">
+                <a asp-action="Create" class="btn btn-success px-4 shadow-sm">
+                    <i class="fas fa-cloud-upload-alt me-2"></i>Tải lên Tài Liệu
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container shadow-sm border">
+        <table class="table table-hover align-middle mb-0" id="masterTable">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-4" style="width: 35%;">Tên Tài liệu & Phân loại</th>
+                    <th style="width: 20%;">Liên kết tải</th>
+                    <th style="width: 25%;">Thông tin tải lên</th>
+                    <th class="text-center" style="width: 20%;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+<td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3 text-danger fs-3">
+                                        @if(item.PhanLoai == "Bài giảng" || item.PhanLoai == "Giáo trình") { <i class="fas fa-file-powerpoint text-warning"></i> }
+                                        else if (item.PhanLoai == "Biểu mẫu") { <i class="fas fa-file-word text-primary"></i> }
+                                        else { <i class="fas fa-file-pdf text-danger"></i> }
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1 fw-bold text-dark">@item.TenTaiLieu</h6>
+                                        <span class="badge bg-light text-secondary border">@item.PhanLoai</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="@item.DuongDanFile" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                    <i class="fas fa-download me-1"></i> Xem File
+                                </a>
+                            </td>
+                            <td>
+                                <div class="small">
+                                    <div class="text-dark fw-bold mb-1"><i class="fas fa-user-circle text-muted me-1"></i> @item.MaNguoiTaiLenNavigation?.HoTen</div>
+                                    <div class="text-muted"><i class="far fa-clock me-1"></i> @(item.NgayTaiLen?.ToString("dd/MM/yyyy HH:mm"))</div>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group shadow-sm">
+                                    <a class="btn btn-sm btn-outline-warning" asp-action="Edit" asp-route-id="@item.MaTaiLieu"><i class="fas fa-edit"></i></a>
+                                    <a class="btn btn-sm btn-outline-danger rounded-end" asp-action="Delete" asp-route-id="@item.MaTaiLieu"><i class="fas fa-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-muted">
+                            <i class="fas fa-folder-open fa-3x mb-3 opacity-50"></i>
+                            <p>Chưa có tài liệu nào được tải lên hệ thống.</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+var successMessage = '@TempData["SuccessMessage"]';
+            if (successMessage && successMessage.length > 0) {
+                Swal.fire({ icon: 'success', title: 'Thành công!', text: successMessage, timer: 2000, showConfirmButton: false });
+            }
+
+            document.getElementById('mainSearch').addEventListener('keyup', function () {
+                let val = this.value.toLowerCase();
+                let rows = document.querySelectorAll('#masterTable tbody tr');
+                rows.forEach(row => {
+                    if(row.innerText.includes("Chưa có tài liệu")) return;
+                    row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,50 @@
+﻿@model KhoaNoiVuCNTT.Models.GiangVien
+
+@{
+    ViewData["Title"] = "Xóa Giảng Viên";
+}
+
+<div class="container-fluid py-4 px-lg-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-danger border-2" style="border-radius: 16px;">
+                <div class="card-header bg-danger text-white text-center pt-4 pb-3" style="border-radius: 14px 14px 0 0;">
+                    <i class="fas fa-user-times fa-3x mb-3 opacity-75"></i>
+                    <h4 class="mb-0 fw-bold">Xác nhận Xóa Hồ sơ</h4>
+                </div>
+                
+                <div class="card-body p-4 text-center">
+                    <p class="fs-5 mb-4 text-dark">Bạn có chắc chắn muốn xóa hồ sơ giảng viên này khỏi hệ thống không? Hành động này không thể khôi phục.</p>
+                    
+                    <div class="bg-light p-4 rounded-3 text-start mb-4 border">
+                        <dl class="row mb-0 fs-6">
+                            <dt class="col-sm-4 text-muted">Họ và tên:</dt>
+                            <dd class="col-sm-8 fw-bold text-dark">@Model.TenGiangVien</dd>
+
+                            <dt class="col-sm-4 text-muted mt-2">Thông tin:</dt>
+                            <dd class="col-sm-8 mt-2">
+                                @Model.GioiTinh - @Model.Tuoi tuổi
+                            </dd>
+
+                            <dt class="col-sm-4 text-muted mt-2">Môn dạy:</dt>
+                            <dd class="col-sm-8 mt-2"><span class="badge bg-secondary">@Model.MonDay</span></dd>
+                        </dl>
+                    </div>
+
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="MaGiangVien" />
+                        
+                        <div class="d-flex justify-content-center gap-3 mt-2">
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4 py-2" style="border-radius: 8px;">
+                                <i class="fas fa-arrow-left me-2"></i>Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-danger px-4 py-2 shadow-sm" style="border-radius: 8px;">
+                                <i class="fas fa-trash-alt me-2"></i>Xác nhận Xóa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

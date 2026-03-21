@@ -1,0 +1,141 @@
+﻿@model IEnumerable<KhoaNoiVuCNTT.Models.ThongBao>
+
+@{
+    ViewData["Title"] = "Quản lý Thông Báo";
+    var totalThongBao = Model?.Count() ?? 0;
+}
+
+<style>
+    :root {
+        --primary-soft: #eef2ff;
+        --primary-dark: #4338ca;
+    }
+    body { background-color: #f9fafb; font-family: 'Inter', sans-serif; }
+    .stat-card { border: none; border-radius: 12px; transition: transform 0.2s; }
+    .stat-card:hover { transform: translateY(-5px); }
+    .table-container { background: white; border-radius: 16px; overflow: hidden; }
+    .search-input { border-radius: 10px 0 0 10px; border-right: none; }
+    .search-btn { border-radius: 0 10px 10px 0; }
+    .text-truncate-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;  
+        overflow: hidden;
+    }
+</style>
+
+<div class="container-fluid py-4 px-lg-5">
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card stat-card shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1 opacity-75 small">Tổng số Bài đăng</p>
+                            <h3 class="mb-0 fw-bold">@totalThongBao <span class="fs-6 fw-normal">thông báo</span></h3>
+                        </div>
+                        <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                            <i class="fas fa-bullhorn fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4 px-3 py-2">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-6">
+                <div class="input-group">
+                    <input type="text" id="mainSearch" class="form-control search-input" placeholder="Tìm tiêu đề, nội dung, người đăng...">
+                    <button class="btn btn-primary search-btn"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+            <div class="col-lg-6 text-lg-end">
+                <a asp-action="Create" class="btn btn-success px-4 shadow-sm">
+                    <i class="fas fa-plus-circle me-2"></i>Tạo Thông Báo Mới
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container shadow-sm border">
+        <table class="table table-hover align-middle mb-0" id="masterTable">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-4" style="width: 35%;">Tiêu đề & Nội dung</th>
+                    <th style="width: 20%;">Người đăng</th>
+                    <th style="width: 20%;">Ngày đăng</th>
+                    <th class="text-center" style="width: 25%;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+@if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <h6 class="mb-1 fw-bold text-dark">@item.TieuDe</h6>
+                                <small class="text-muted text-truncate-2">@item.NoiDung</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-soft-primary text-primary px-2 py-1 fs-6">
+                                    <i class="fas fa-user-edit me-1"></i> @item.MaNguoiDangNavigation?.HoTen
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-dark"><i class="far fa-clock me-1 text-muted"></i> @(item.NgayDang?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa rõ")</span>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group shadow-sm">
+                                    <a class="btn btn-sm btn-outline-warning" asp-action="Edit" asp-route-id="@item.MaThongBao">
+                                        <i class="fas fa-edit me-1"></i> Sửa
+                                    </a>
+                                    <a class="btn btn-sm btn-outline-danger rounded-end" asp-action="Delete" asp-route-id="@item.MaThongBao">
+                                        <i class="fas fa-trash me-1"></i> Xóa
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-center py-5 text-muted">
+                            <i class="fas fa-clipboard-list fa-3x mb-3 opacity-50"></i>
+                            <p>Bảng tin trống. Chưa có thông báo nào được đăng.</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var successMessage = '@TempData["SuccessMessage"]';
+            var errorMessage = '@Html.Raw(TempData["ErrorMessage"])';
+
+            if (successMessage && successMessage.length > 0) {
+                Swal.fire({ icon: 'success', title: 'Thành công!', text: successMessage, timer: 2000, showConfirmButton: false });
+            }
+            if (errorMessage && errorMessage.length > 0) {
+                Swal.fire({ icon: 'error', title: 'Lỗi!', text: errorMessage });
+            }
+
+            document.getElementById('mainSearch').addEventListener('keyup', function () {
+let val = this.value.toLowerCase();
+                let rows = document.querySelectorAll('#masterTable tbody tr');
+                rows.forEach(row => {
+                    if(row.innerText.includes("Bảng tin trống")) return;
+                    row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
+                });
+            });
+        });
+    </script>
+}

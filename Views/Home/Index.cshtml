@@ -1,0 +1,312 @@
+﻿<!-- HERO BANNER -->
+@{
+    ViewData["Title"] = "Trang chủ";
+    Layout = "_Layout";
+}
+<style>
+
+    .hero-banner {
+        position: relative;
+        overflow:hidden;
+        border-radius:12px;
+
+    }
+
+    .hero-banner img {
+        width: 100%;
+        height: 420px;
+        object-fit: cover;
+        border-radius: 10px;
+        filter:brightness(70%);
+    }
+
+    .hero-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+    }
+    .hero-text h1 {
+        font-size:40px;
+        font-weight:700;
+        font-weight: 1px;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+
+    }
+
+    .hero-text p {
+        font-size: 18px;
+        text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+        }
+    .dashboard{
+        border:none;
+        border-radius:12px;
+        transition:0.3s;
+        }
+
+    .dashboard:hover{
+        transform:translateY(-8px);
+        box-shadow:0 10px 25px rgba(0,0,0,0.15);
+        }
+
+    .icon{
+        font-size:45px;
+    }
+
+    .intro img{
+        border-radius:12px;
+        box-shadow:0 10px 20px rgba(0,0,0,0.1);
+    }
+
+
+    /* STATISTICS */
+
+    .stats{
+        background:#f8f9fa;
+    }
+
+    .stats h2{
+        font-size:40px;
+        font-weight:700;
+    }
+
+    .stats p{
+        font-size:16px;
+        color:#555;
+    }
+
+
+    /* FOOTER */
+
+    footer{
+        font-size:15px;
+        letter-spacing:0.5px;
+    }
+
+</style>
+
+<div class="container text-center mt-4">
+
+    <div class="hero-banner my-4">
+
+        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa">
+
+        <div class="hero-text">
+
+            <h1>HỆ THỐNG QUẢN LÝ NỘI BỘ</h1>
+
+            <p>Quản lý cán bộ và bộ môn trong khoa CNTT</p>
+
+        </div>
+
+    </div>
+
+    <div class="mt-4">
+
+        <a asp-controller="CanBo"
+               asp-action="Index"
+               class="btn btn-primary me-2">
+            Quản lý Cán Bộ
+        </a>
+
+        <a asp-controller="BoMon"
+               asp-action="Index"
+               class="btn btn-success">
+            Quản lý Bộ Môn
+        </a>
+
+    </div>
+
+
+    <!-- DASHBOARD -->
+
+    <div class="container mt-5">
+
+        <h2 class="text-center fw-bold mb-5">
+            HỆ THỐNG QUẢN LÝ
+        </h2>
+
+        <div class="row g-4 text-center">
+
+            <div class="col-md-3">
+
+                <div class="card dashboard shadow">
+
+                    <div class="card-body">
+
+                        <div class="icon">📢</div>
+
+                        <h5 class="mt-3">Thông báo</h5>
+
+                        <p>Xem các thông báo mới</p>
+
+                        <a asp-controller="ThongBao"
+                               asp-action="Index"
+                               class="btn btn-primary">
+                            Truy cập
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="card dashboard shadow">
+
+                    <div class="card-body">
+
+                        <div class="icon">📚</div>
+
+                        <h5 class="mt-3">Tài liệu</h5>
+
+                        <p>Kho tài liệu nội bộ</p>
+
+                        <a asp-controller="TaiLieu"
+                               asp-action="Index"
+                               class="btn btn-success">
+                            Truy cập
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="card dashboard shadow">
+
+                    <div class="card-body">
+
+                        <div class="icon">📅</div>
+
+                        <h5 class="mt-3">Lịch công tác</h5>
+
+                        <p>Lịch làm việc của khoa</p>
+
+                        <a asp-controller="LichCongTac"
+                               asp-action="Index"
+                               class="btn btn-warning">
+                            Truy cập
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <div class="card dashboard shadow">
+
+                    <div class="card-body">
+
+                        <div class="icon">👨‍🏫</div>
+
+                        <h5 class="mt-3">Cán bộ</h5>
+
+                        <p>Danh sách cán bộ</p>
+
+                        <a asp-controller="CanBo"
+                               asp-action="Index"
+                               class="btn btn-danger">
+                            Truy cập
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- GIỚI THIỆU -->
+
+    <div class="container mt-5">
+
+        <div class="row align-items-center">
+
+            <div class="col-md-6">
+
+                <img src="https://images.unsplash.com/photo-1518770660439-4636190af475"
+                     class="img-fluid rounded">
+
+            </div>
+
+            <div class="col-md-6">
+
+                <h2>Khoa Công Nghệ Thông Tin</h2>
+
+                <p>
+                    Khoa Công Nghệ Thông Tin là đơn vị đào tạo và nghiên cứu
+                    trong lĩnh vực công nghệ thông tin, cung cấp nguồn nhân lực
+                    chất lượng cao cho xã hội.
+                </p>
+
+                <p>
+                    Hệ thống thông tin nội bộ giúp quản lý thông báo,
+                    tài liệu, lịch công tác và thông tin cán bộ.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- THỐNG KÊ -->
+
+    <div class="bg-light mt-5 py-5">
+
+        <div class="container text-center">
+
+            <div class="row">
+
+                <div class="col-md-3">
+
+                    <h2 class="text-primary">50+</h2>
+                    <p>Cán bộ giảng viên</p>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <h2 class="text-success">100+</h2>
+                    <p>Tài liệu</p>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <h2 class="text-warning">200+</h2>
+                    <p>Thông báo</p>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <h2 class="text-danger">20+</h2>
+                    <p>Bộ môn</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>

@@ -1,0 +1,172 @@
+﻿@model IEnumerable<KhoaNoiVuCNTT.Models.VaiTro>
+
+@{
+    ViewData["Title"] = "Quản lý Vai Trò Hệ Thống";
+    var totalVaiTro = Model?.Count() ?? 0;
+}
+
+<style>
+    :root {
+        --primary-soft: #eef2ff;
+        --primary-dark: #4338ca;
+    }
+
+    body {
+        background-color: #f9fafb;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .stat-card {
+        border: none;
+        border-radius: 12px;
+        transition: transform 0.2s;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .table-container {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .search-input {
+        border-radius: 10px 0 0 10px;
+        border-right: none;
+    }
+
+    .search-btn {
+        border-radius: 0 10px 10px 0;
+    }
+</style>
+
+<div class="container-fluid py-4 px-lg-5">
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card stat-card shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1 opacity-75 small">Tổng số Vai trò</p>
+                            <h3 class="mb-0 fw-bold">@totalVaiTro <span class="fs-6 fw-normal">quyền</span></h3>
+                        </div>
+                        <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                            <i class="fas fa-user-shield fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4 px-3 py-2">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-5">
+                <div class="input-group">
+                    <input type="text" id="mainSearch" class="form-control search-input" placeholder="Nhập tên vai trò cần tìm...">
+                    <button class="btn btn-primary search-btn"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+            <div class="col-lg-7 text-lg-end">
+                <a asp-action="Create" class="btn btn-success px-4 shadow-sm">
+                    <i class="fas fa-plus-circle me-2"></i>Thêm Vai Trò
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container shadow-sm border">
+        <table class="table table-hover align-middle mb-0" id="masterTable">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-4 text-center" style="width: 15%;">Mã Vai Trò</th>
+                    <th style="width: 55%;">Tên Vai Trò (Phân quyền)</th>
+                    <th class="text-center" style="width: 30%;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 text-center">
+                                <span class="badge bg-secondary">#@item.MaVaiTro</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-text me-3 bg-soft-primary text-primary rounded d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-key"></i>
+                                    </div>
+                                    <h6 class="mb-0 fw-bold text-dark">@item.TenVaiTro</h6>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group shadow-sm">
+                                    <a class="btn btn-sm btn-outline-warning" asp-action="Edit" asp-route-id="@item.MaVaiTro">
+                                        <i class="fas fa-edit me-1"></i> Sửa
+                                    </a>
+                                    <a class="btn btn-sm btn-outline-danger rounded-end" asp-action="Delete" asp-route-id="@item.MaVaiTro">
+                                        <i class="fas fa-trash me-1"></i> Xóa
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="3" class="text-center py-5 text-muted">
+                            <i class="fas fa-shield-alt fa-3x mb-3 opacity-50"></i>
+                            <p>Chưa có dữ liệu vai trò nào trong hệ thống.</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        // Hiển thị thông báo (Thành công / Lỗi khóa ngoại) từ Controller
+        var successMessage = '@TempData["SuccessMessage"]';
+        var errorMessage = '@Html.Raw(TempData["ErrorMessage"])';
+
+        if (successMessage && successMessage.length > 0) {
+        Swal.fire({
+        icon: 'success',
+        title: 'Thành công!',
+        text: successMessage,
+        timer: 2000,
+        showConfirmButton: false
+        });
+        }
+
+        if (errorMessage && errorMessage.length > 0) {
+        Swal.fire({
+        icon: 'error',
+        title: 'Lỗi thao tác!',
+        text: errorMessage
+        });
+        }
+
+        // Tính năng tìm kiếm nhanh trực tiếp trên giao diện
+        document.getElementById('mainSearch').addEventListener('keyup', function () {
+        let val = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#masterTable tbody tr');
+        rows.forEach(row => {
+        if(row.innerText === "Chưa có dữ liệu vai trò nào trong hệ thống.") return;
+        row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
+        });
+        });
+        });
+    </script>
+}

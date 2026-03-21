@@ -1,0 +1,232 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - Hệ thống nội bộ</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- ICON -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+          
+    <style>
+            body {
+                background: #f4f6f9;
+                font-family: "Segoe UI", sans-serif;
+            }
+
+            /* SIDEBAR */
+            .sidebar {
+                width: 240px;
+                height: 100vh;
+                position: fixed;
+                background: linear-gradient(180deg, #1e293b, #0f172a);
+                color: white;
+            }
+
+                .sidebar .logo {
+                    font-size: 20px;
+                    font-weight: bold;
+                    padding: 20px;
+                    border-bottom: 1px solid rgba(255,255,255,.1);
+                    text-align: center;
+                }
+
+                .sidebar a {
+                    display: block;
+                    color: #cbd5e1;
+                    padding: 14px 20px;
+                    text-decoration: none;
+                    transition: .2s;
+                }
+
+                    .sidebar a:hover {
+                        background: #334155;
+                        color: white;
+                        padding-left: 25px;
+                    }
+
+            ..content {
+                padding: 20px;
+            }
+
+            /* TOPBAR */
+            .topbar {
+                background: linear-gradient(135deg, #3c8dbc, #00c0ef);
+                padding: 10px 25px;
+                color: white;
+                display: flex;
+                align-items: center;
+            }
+
+                .topbar .title {
+                    font-weight: bold;
+                    font-size: 18px;
+                }
+
+            .user-box {
+                margin-left: auto;
+                display: flex;
+                align-items: center;
+                background: rgba(255,255,255,0.15);
+                padding: 6px 12px;
+                border-radius: 30px;
+            }
+
+            .avatar {
+                width: 35px;
+                height: 35px;
+                background: #fff;
+                color: #3c8dbc;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                margin-right: 10px;
+            }
+
+            .username {
+                color: white;
+                font-weight: 500;
+            }
+
+            .btn-logout {
+                background: #ff4d4f;
+                color: white;
+                border-radius: 20px;
+                padding: 4px 12px;
+                margin-left: 10px;
+                border: none;
+            }
+
+                .btn-logout:hover {
+                    background: #d9363e;
+                }
+
+            .btn-login {
+                background: white;
+                color: #3c8dbc;
+                border-radius: 20px;
+                padding: 5px 15px;
+            }
+
+            /* CONTENT */
+            .content {
+                padding: 25px;
+            }
+
+            /* FOOTER */
+            footer {
+                background: white;
+                border-top: 1px solid #eee;
+                text-align: center;
+                padding: 15px;
+                margin-top: 20px;
+            }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary px-3">
+        <div class="container-fluid">
+
+            <!-- Logo -->
+            <a class="navbar-brand fw-bold" href="#">🏫 Nội Vụ CNTT</a>
+
+            <!-- Nút mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Menu -->
+            <div class="collapse navbar-collapse" id="menu">
+                <ul class="navbar-nav me-auto">
+
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="CanBo" asp-action="Index">Cán bộ</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="BoMon" asp-action="Index">Bộ môn</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="VaiTro" asp-action="Index">Vai trò</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="ThongBao" asp-action="Index">Thông báo</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="TaiLieu" asp-action="Index">Tài liệu</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="LichCongTac" asp-action="Index">Lịch công tác</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="GiangVien" asp-action="Index">Giảng viên</a>
+                    </li>
+
+                </ul>
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div class="user-box">
+                        <div class="avatar">
+                            @User.Identity.Name.Substring(0, 1)
+                        </div>
+
+                        <span class="username">@User.Identity.Name</span>
+
+                        <a asp-controller="TaiKhoan" asp-action="Logout" class="btn-logout">
+                            Đăng xuất
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <a asp-controller="TaiKhoan" asp-action="Login" class="btn-login ms-auto">
+                        Đăng nhập
+                    </a>
+                }
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN -->
+    <div class="main">
+
+
+        <!-- CONTENT -->
+        <div class="content">
+            @RenderBody()
+        </div>
+
+        <!-- FOOTER -->
+        <footer>
+            © 2026 - Hệ thống quản lý thông tin nội bộ
+        </footer>
+
+    </div>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+
+
+
+</body>
+</html>

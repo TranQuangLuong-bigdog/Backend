@@ -1,0 +1,351 @@
+﻿@model IEnumerable<KhoaNoiVuCNTT.Models.CanBo>
+
+@{
+    ViewData["Title"] = "Hệ thống Quản lý Cán Bộ";
+    var totalStaff = Model?.Count() ?? 0;
+    var adminCount = Model?.Count(x => x.MaVaiTroNavigation?.TenVaiTro == "Quản trị viên") ?? 0; // Chỉnh lại theo đúng tên vai trò trong DB của bạn
+}
+
+<style>
+    :root {
+        --primary-soft: #eef2ff;
+        --primary-dark: #4338ca;
+    }
+
+    body {
+        background-color: #f9fafb;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .stat-card {
+        border: none;
+        border-radius: 12px;
+        transition: transform 0.2s;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .table-container {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .search-input {
+        border-radius: 10px 0 0 10px;
+        border-right: none;
+    }
+
+    .search-btn {
+        border-radius: 0 10px 10px 0;
+    }
+
+    .badge-role {
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .modal-content {
+        border: none;
+        border-radius: 20px;
+    }
+
+    .form-control, .form-select {
+        border-radius: 10px;
+        padding: 10px;
+        border: 1px solid #e5e7eb;
+    }
+
+        .form-control:focus {
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.1);
+        }
+</style>
+
+<div class="container-fluid py-4 px-lg-5">
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="mb-1 opacity-75 small">Tổng số Cán bộ</p>
+                            <h3 class="mb-0 fw-bold">@totalStaff</h3>
+                        </div>
+                        <i class="fas fa-users fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card shadow-sm bg-white border-start border-danger border-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="mb-1 text-muted small">Quản trị viên</p>
+                            <h3 class="mb-0 fw-bold text-danger">@adminCount</h3>
+                        </div>
+                        <i class="fas fa-user-shield fa-2x text-danger opacity-25"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4 px-3 py-2">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-4">
+                <div class="input-group">
+                    <input type="text" id="mainSearch" class="form-control search-input" placeholder="Tìm tên, email, mã cán bộ...">
+                    <button class="btn btn-primary search-btn"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <select id="filterBoMon" class="form-select">
+                    <option value="">Tất cả Bộ môn</option>
+                    @if (ViewBag.MaBoMon != null)
+                    {
+                        foreach (var item in (SelectList)ViewBag.MaBoMon)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-lg-2">
+                <select id="filterVaiTro" class="form-select">
+                    <option value="">Tất cả Vai trò</option>
+                    @if (ViewBag.MaVaiTro != null)
+                    {
+                        foreach (var item in (SelectList)ViewBag.MaVaiTro)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <button class="btn btn-outline-secondary me-2" onclick="window.print()">
+                    <i class="fas fa-print me-1"></i> In báo cáo
+                </button>
+                <button type="button" class="btn btn-success" onclick="openCreateModal()">
+                    <i class="fas fa-plus-circle me-1"></i> Thêm Cán Bộ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container shadow-sm border">
+        <table class="table table-hover align-middle mb-0" id="masterTable">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-4">Thông tin cán bộ</th>
+                    <th>Email liên hệ</th>
+                    <th>Bộ môn</th>
+                    <th>Vai trò</th>
+                    <th class="text-center">Trạng thái</th>
+                    <th class="text-center">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-text me-3 bg-soft-primary rounded-circle" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background-color: var(--primary-soft);">
+                                        <span class="fw-bold text-primary">@(string.IsNullOrEmpty(item.HoTen) ? "U" : item.HoTen.Substring(0, 1))</span>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">@item.HoTen</h6>
+                                        <small class="text-muted">Mã: #@item.MaCanBo</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><i class="far fa-envelope me-2 text-muted"></i>@item.Email</td>
+                            
+                            <td><span class="text-dark">@item.MaBoMonNavigation?.TenBoMon</span></td>
+                            
+                            <td>
+                                @if (item.MaVaiTroNavigation?.TenVaiTro == "Quản trị viên" || item.MaVaiTroNavigation?.TenVaiTro == "Admin")
+                                {
+                                    <span class="badge-role bg-danger text-white">
+                                        @item.MaVaiTroNavigation?.TenVaiTro
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge-role bg-primary text-white">@(item.MaVaiTroNavigation?.TenVaiTro ?? "Cán bộ")</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <span class="text-success"><i class="fas fa-check-circle me-1"></i> Đang hoạt động</span>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-warning" onclick="openEditModal('@item.MaCanBo', '@item.HoTen', '@item.Email', '@item.MaBoMon', '@item.MaVaiTro')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger rounded-end" onclick="confirmDelete('@item.MaCanBo', '@item.HoTen')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+        <div class="p-3 bg-light d-flex justify-content-between align-items-center">
+            <span class="small text-muted">Hiển thị @totalStaff cán bộ</span>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="canBoModal" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="modalTitle">Thêm Cán Bộ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="canBoForm" method="post" class="needs-validation" novalidate>
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="MaCanBo" name="MaCanBo" />
+                <div class="modal-body py-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-600 small">Họ và Tên</label>
+                        <input type="text" id="HoTen" name="HoTen" class="form-control" required minlength="2">
+                        <div class="invalid-feedback">Tên không được để trống và trên 2 ký tự.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-600 small">Địa chỉ Email</label>
+                        <input type="email" id="Email" name="Email" class="form-control" required>
+                        <div class="invalid-feedback">Vui lòng nhập email hợp lệ.</div>
+                    </div>
+                    <div class="mb-3" id="passwordField">
+                        <label class="form-label fw-600 small">Mật khẩu khởi tạo</label>
+                        <input type="password" id="MatKhau" name="MatKhau" class="form-control">
+                        <div class="form-text">Mặc định nếu để trống: 123456</div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label fw-600 small">Đơn vị Bộ môn</label>
+                            <select id="MaBoMon" name="MaBoMon" class="form-select" asp-items="ViewBag.MaBoMon" required></select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-600 small">Vai trò hệ thống</label>
+                            <select id="MaVaiTro" name="MaVaiTro" class="form-select" asp-items="ViewBag.MaVaiTro" required></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary px-4" id="btnSave">Xác nhận Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        let modal;
+        let form;
+
+        document.addEventListener("DOMContentLoaded", function() {
+        modal = new bootstrap.Modal(document.getElementById('canBoModal'));
+        form = document.getElementById('canBoForm');
+
+        // 1. TÌM KIẾM NHANH (CLIENT-SIDE)
+        document.getElementById('mainSearch').addEventListener('keyup', function() {
+        let val = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#masterTable tbody tr');
+        rows.forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
+        });
+        });
+
+        // VALIDATION FORM
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+        }, false)
+        })
+        });
+
+        // 2. MỞ MODAL THÊM MỚI
+        function openCreateModal() {
+        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-plus-circle text-success me-2"></i>Thêm Cán Bộ Mới';
+        form.action = '/CanBo/Create';
+        form.reset();
+        document.getElementById('MaCanBo').value = 0;
+        document.getElementById('passwordField').style.display = "block";
+            
+        // Xóa validation cũ nếu có
+        form.classList.remove('was-validated');
+        modal.show();
+        }
+
+        // 3. MỞ MODAL CHỈNH SỬA
+        function openEditModal(id, hoten, email, bomon, vaitro) {
+        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit text-warning me-2"></i>Chỉnh Sửa Thông Tin';
+        form.action = '/CanBo/Edit/' + id;
+
+        document.getElementById('MaCanBo').value = id;
+        document.getElementById('HoTen').value = hoten;
+        document.getElementById('Email').value = email;
+        document.getElementById('MaBoMon').value = bomon;
+        document.getElementById('MaVaiTro').value = vaitro;
+
+        document.getElementById('passwordField').style.display = "none";
+        form.classList.remove('was-validated');
+        modal.show();
+        }
+
+        // 4. XỬ LÝ XÓA VỚI SWEETALERT2 (Đã sửa từ GET sang form POST bảo mật)
+        function confirmDelete(id, name) {
+        Swal.fire({
+        title: 'Xác nhận xóa?',
+        text: "Bạn có chắc chắn muốn xóa cán bộ " + name + "?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Đúng, xóa!',
+        cancelButtonText: 'Hủy'
+        }).then((result) => {
+        if (result.isConfirmed) {
+        // Tạo một form ẩn để gửi request POST cùng với AntiForgeryToken
+        var deleteForm = document.createElement('form');
+        deleteForm.method = 'POST';
+        deleteForm.action = '/CanBo/Delete/' + id;
+                    
+        // Lấy token bảo mật từ form modal có sẵn trên trang
+        var tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+        if (tokenInput) {
+        deleteForm.appendChild(tokenInput.cloneNode(true));
+        }
+        document.body.appendChild(deleteForm);
+        deleteForm.submit();
+        }
+        })
+        }
+    </script>
+
+}

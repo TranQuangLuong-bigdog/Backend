@@ -1,0 +1,309 @@
+﻿@model IEnumerable<KhoaNoiVuCNTT.Models.BoMon>
+
+@{
+    ViewData["Title"] = "Quản lý Tổ Chuyên Môn";
+    var totalBoMon = Model?.Count() ?? 0;
+}
+
+<style>
+    :root {
+        --primary-soft: #eef2ff;
+        --primary-dark: #4338ca;
+    }
+
+    body {
+        background-color: #f9fafb;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .stat-card {
+        border: none;
+        border-radius: 12px;
+        transition: transform 0.2s;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .table-container {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .search-input {
+        border-radius: 10px 0 0 10px;
+        border-right: none;
+    }
+
+    .search-btn {
+        border-radius: 0 10px 10px 0;
+    }
+
+    .modal-content {
+        border: none;
+        border-radius: 20px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 10px;
+        border: 1px solid #e5e7eb;
+    }
+
+        .form-control:focus {
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.1);
+        }
+</style>
+
+<div class="container-fluid py-4 px-lg-5">
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card stat-card shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="mb-1 opacity-75 small">Tổng số Bộ môn</p>
+                            <h3 class="mb-0 fw-bold">@totalBoMon <span class="fs-6 fw-normal">bộ môn</span></h3>
+                        </div>
+                        <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                            <i class="fas fa-sitemap fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4 px-3 py-2">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-5">
+                <div class="input-group">
+                    <input type="text" id="mainSearch" class="form-control search-input" placeholder="Nhập tên bộ môn cần tìm...">
+                    <button class="btn btn-primary search-btn"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+            <div class="col-lg-7 text-lg-end">
+                <button type="button" class="btn btn-success px-4" onclick="openCreateModal()">
+                    <i class="fas fa-plus-circle me-2"></i>Thêm Bộ Môn
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-container shadow-sm border">
+        <table class="table table-hover align-middle mb-0" id="masterTable">
+            <thead class="bg-light">
+                <tr>
+                    <th class="ps-4 text-center" style="width: 10%;">Mã BM</th>
+                    <th style="width: 60%;">Tên Bộ Môn (Tổ chuyên môn)</th>
+                    <th class="text-center" style="width: 30%;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 text-center">
+                                <span class="badge bg-secondary">#@item.MaBoMon</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-text me-3 bg-soft-primary text-primary rounded d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
+                                        @(string.IsNullOrEmpty(item.TenBoMon) ? "BM" : item.TenBoMon.Substring(0, 1).ToUpper())
+                                    </div>
+                                    <h6 class="mb-0 fw-bold text-dark">@item.TenBoMon</h6>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-warning" onclick="openEditModal('@item.MaBoMon', '@Html.Raw(item.TenBoMon)')">
+                                        <i class="fas fa-edit me-1"></i> Sửa
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger rounded-end" onclick="confirmDelete('@item.MaBoMon', '@Html.Raw(item.TenBoMon)')">
+                                        <i class="fas fa-trash me-1"></i> Xóa
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="3" class="text-center py-5 text-muted">
+                            <i class="fas fa-folder-open fa-3x mb-3 opacity-50"></i>
+                            <p>Chưa có dữ liệu bộ môn nào trong hệ thống.</p>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="boMonModal" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="modalTitle">Thêm Bộ Môn Mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            
+            <form id="boMonForm" method="post" class="needs-validation" novalidate>
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="MaBoMon" name="MaBoMon" />
+                
+                <div class="modal-body py-4">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger small">
+                            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        </div>
+                    }
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Tên Bộ Môn <span class="text-danger">*</span></label>
+                        <input type="text" id="TenBoMon" name="TenBoMon" class="form-control form-control-lg fs-6" placeholder="VD: Công nghệ phần mềm" required minlength="3">
+                        <div class="invalid-feedback">Vui lòng nhập tên bộ môn (ít nhất 3 ký tự).</div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer border-0 pt-0 bg-light rounded-bottom-4 py-3">
+                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary px-4 shadow-sm" id="btnSave">
+                        <i class="fas fa-save me-2"></i>Lưu thông tin
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        let modal;
+        let form;
+
+        document.addEventListener("DOMContentLoaded", function () {
+        // Khởi tạo Modal Bootstrap
+        modal = new bootstrap.Modal(document.getElementById('boMonModal'));
+        form = document.getElementById('boMonForm');
+
+        // Xử lý thông báo SweetAlert2 từ Controller
+        var successMessage = '@TempData["SuccessMessage"]';
+        var errorMessage = '@Html.Raw(TempData["ErrorMessage"])';
+
+        if (successMessage && successMessage.length > 0) {
+        Swal.fire({
+        icon: 'success',
+        title: 'Thành công!',
+        text: successMessage,
+        timer: 2000,
+        showConfirmButton: false
+        });
+        }
+
+        if (errorMessage && errorMessage.length > 0) {
+        Swal.fire({
+        icon: 'error',
+        title: 'Lỗi thao tác!',
+        text: errorMessage
+        });
+        }
+
+        // Nếu form bị lỗi validation từ server (ví dụ trùng tên), mở lại modal ngay lập tức
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <text>
+                modal.show();
+            </text>
+        }
+
+        // Tìm kiếm trực tiếp trên bảng
+        document.getElementById('mainSearch').addEventListener('keyup', function () {
+        let val = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#masterTable tbody tr');
+        rows.forEach(row => {
+        if(row.innerText === "Chưa có dữ liệu bộ môn nào trong hệ thống.") return;
+        row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
+        });
+        });
+
+        // Validation giao diện Bootstrap
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+        }, false)
+        })
+        });
+
+        // Mở Modal Thêm mới
+        function openCreateModal() {
+        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-sitemap text-success me-2"></i>Thêm Bộ Môn Mới';
+        form.action = '/BoMon/Create';
+        form.reset();
+        document.getElementById('MaBoMon').value = 0;
+        form.classList.remove('was-validated');
+            
+        // Ẩn bảng báo lỗi cũ nếu có
+        let alertBox = document.querySelector('.alert-danger');
+        if(alertBox) alertBox.style.display = 'none';
+
+        modal.show();
+        }
+
+        // Mở Modal Chỉnh sửa
+        function openEditModal(id, ten) {
+        document.getElementById('modalTitle').innerHTML = '<i class="fas fa-edit text-warning me-2"></i>Đổi Tên Bộ Môn';
+        form.action = '/BoMon/Edit/' + id;
+        document.getElementById('MaBoMon').value = id;
+        document.getElementById('TenBoMon').value = ten;
+        form.classList.remove('was-validated');
+            
+        let alertBox = document.querySelector('.alert-danger');
+        if(alertBox) alertBox.style.display = 'none';
+
+        modal.show();
+        }
+
+        // Xác nhận Xóa an toàn
+        function confirmDelete(id, name) {
+        Swal.fire({
+        title: 'Xóa bộ môn này?',
+        html: "Bạn có chắc chắn muốn xóa tổ chuyên môn <b>" + name + "</b>?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Đúng, Xóa ngay!',
+        cancelButtonText: 'Hủy bỏ'
+        }).then((result) => {
+        if (result.isConfirmed) {
+        var deleteForm = document.createElement('form');
+        deleteForm.method = 'POST';
+        deleteForm.action = '/BoMon/Delete/' + id;
+
+        var tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+        if (tokenInput) {
+        deleteForm.appendChild(tokenInput.cloneNode(true));
+        }
+        document.body.appendChild(deleteForm);
+        deleteForm.submit();
+        }
+        })
+        }
+    </script>
+}

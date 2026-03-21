@@ -1,0 +1,50 @@
+﻿@model KhoaNoiVuCNTT.Models.CanBo
+
+@{
+    ViewData["Title"] = "Xóa Cán Bộ";
+}
+
+<div class="container-fluid py-4 px-lg-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-danger border-2" style="border-radius: 16px;">
+                <div class="card-header bg-danger text-white text-center pt-4 pb-3" style="border-radius: 14px 14px 0 0;">
+                    <i class="fas fa-exclamation-triangle fa-3x mb-2"></i>
+                    <h4 class="mb-0 fw-bold">Xác nhận xóa cán bộ</h4>
+                </div>
+                
+                <div class="card-body p-4 text-center">
+                    <p class="fs-5 mb-4">Bạn có chắc chắn muốn xóa dữ liệu của cán bộ này khỏi hệ thống? Hành động này không thể hoàn tác.</p>
+                    
+                    <div class="bg-light p-3 rounded-3 text-start mb-4">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4 text-muted">Họ và Tên:</dt>
+                            <dd class="col-sm-8 fw-bold">@Model.HoTen</dd>
+
+                            <dt class="col-sm-4 text-muted">Email:</dt>
+                            <dd class="col-sm-8">@Model.Email</dd>
+
+                            <dt class="col-sm-4 text-muted">Bộ Môn:</dt>
+                            <dd class="col-sm-8">@Model.MaBoMonNavigation?.TenBoMon</dd>
+
+                            <dt class="col-sm-4 text-muted">Vai Trò:</dt>
+                            <dd class="col-sm-8">
+                                <span class="badge bg-secondary">@Model.MaVaiTroNavigation?.TenVaiTro</span>
+                            </dd>
+                        </dl>
+                    </div>
+
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="MaCanBo" />
+                        <div class="d-flex justify-content-center gap-3">
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4" style="border-radius: 8px;">Quay lại</a>
+                            <button type="submit" class="btn btn-danger px-4" style="border-radius: 8px;">
+                                <i class="fas fa-trash-alt me-2"></i>Xác nhận Xóa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

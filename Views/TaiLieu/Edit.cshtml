@@ -1,0 +1,75 @@
+﻿@model KhoaNoiVuCNTT.Models.TaiLieu
+
+@{
+    ViewData["Title"] = "Cập nhật Tài Liệu";
+}
+
+<div class="container-fluid py-4 px-lg-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0" style="border-radius: 16px;">
+                <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                    <div class="d-flex align-items-center">
+                        <a asp-action="Index" class="btn btn-sm btn-outline-secondary rounded-circle me-3" style="width: 32px; height: 32px; padding: 3px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-arrow-left"></i>
+                        </a>
+                        <h4 class="mb-0 fw-bold text-warning"><i class="fas fa-edit me-2"></i>Chỉnh sửa Thông tin File</h4>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form asp-action="Edit" class="needs-validation" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small"></div>
+                        <input type="hidden" asp-for="MaTaiLieu" />
+                        
+                        <div class="row g-4">
+                            <div class="col-md-8">
+                                <label asp-for="TenTaiLieu" class="form-label fw-bold small text-muted">Tên Tài liệu <span class="text-danger">*</span></label>
+                                <input asp-for="TenTaiLieu" class="form-control" style="border-radius: 10px;" required />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="PhanLoai" class="form-label fw-bold small text-muted">Phân loại <span class="text-danger">*</span></label>
+                                <select asp-for="PhanLoai" class="form-select" style="border-radius: 10px;" required>
+                                    <option value="Biểu mẫu">Biểu mẫu</option>
+                                    <option value="Bài giảng">Bài giảng / Giáo trình</option>
+                                    <option value="Quy chế">Quy chế / Quy định</option>
+                                    <option value="Nghiên cứu">Tài liệu Nghiên cứu</option>
+                                    <option value="Khác">Khác</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label asp-for="DuongDanFile" class="form-label fw-bold small text-muted">Đường dẫn File hiện tại <span class="text-danger">*</span></label>
+                                <input asp-for="DuongDanFile" class="form-control" style="border-radius: 10px;" required />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="MaNguoiTaiLen" class="form-label fw-bold small text-muted">Cán bộ tải lên</label>
+                                <select asp-for="MaNguoiTaiLen" class="form-select" style="border-radius: 10px;" asp-items="ViewBag.MaNguoiTaiLen" required></select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="NgayTaiLen" class="form-label fw-bold small text-muted">Ngày tải lên</label>
+                                <input asp-for="NgayTaiLen" type="datetime-local" class="form-control" style="border-radius: 10px;" required />
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4 pt-4 border-top">
+                            <a asp-action="Index" class="btn btn-light px-4 me-2" style="border-radius: 8px;">Hủy</a>
+                            <button type="submit" class="btn btn-warning px-4 shadow-sm text-dark" style="border-radius: 8px;">
+                                <i class="fas fa-sync-alt me-2"></i>Cập nhật
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
